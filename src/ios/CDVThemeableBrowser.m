@@ -1280,6 +1280,13 @@
 
             [result setImage:buttonImage forState:UIControlStateNormal];
             [result addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+        } else if (buttonProps[kThemeableBrowserPropTitle]) {
+            result = [UIButton buttonWithType:UIButtonTypeCustom];
+            result.bounds = CGRectMake(0, 0, 100, 30);
+
+            [result setTitle:buttonProps[kThemeableBrowserPropTitle] forState:UIControlStateNormal];
+            [result setTitleColor:[UIColor colorWithRed: 0.13 green: 0.13 blue: 0.13 alpha: 1.00] forState:UIControlStateNormal];
+            [result addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
         }
     } else if (!buttonProps) {
         [self.navigationDelegate emitWarning:kThemeableBrowserEmitCodeUndefined
@@ -1548,7 +1555,7 @@
 
 - (void)goCustomButton:(id)sender
 {
-    UIButton* button = sender;
+UIButton* button = sender;
     NSInteger index = button.tag-TAG_SALT;
     [self emitEventForButton:_browserOptions.customButtons[index] withIndex:[NSNumber numberWithLong:index]];
 }
