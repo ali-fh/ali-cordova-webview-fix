@@ -129,6 +129,7 @@ public class ThemeableBrowser extends CordovaPlugin {
     private ValueCallback<Uri[]> mUploadCallbackLollipop;
     private final static int FILECHOOSER_REQUESTCODE = 1;
     private final static int FILECHOOSER_REQUESTCODE_LOLLIPOP = 2;
+    private Button toggleButton;
 
     /**
      * Executes the request and returns PluginResult.
@@ -299,7 +300,7 @@ public class ThemeableBrowser extends CordovaPlugin {
             BrowserButton buttonProps = parseButtonProps(args.getString(1));
             this.changeButtonImage(buttonIndex, buttonProps);
         }
-		else {
+        else {
             return false;
         }
         return true;
@@ -452,6 +453,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                         inAppWebView = null;
                         edittext = null;
                         callbackContext = null;
+                        toggleButton = null;
                     }
                 });
 
@@ -531,7 +533,7 @@ public class ThemeableBrowser extends CordovaPlugin {
      * @return boolean
      */
     public boolean canGoBack() {
-       return this.inAppWebView != null && this.inAppWebView.canGoBack();
+        return this.inAppWebView != null && this.inAppWebView.canGoBack();
     }
 
     /**
@@ -604,6 +606,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                 } else {
                     main = new LinearLayout(cordova.getActivity());
                     ((LinearLayout) main).setOrientation(LinearLayout.VERTICAL);
+                    main.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 }
 
                 // Toolbar layout
@@ -634,7 +637,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                     }
                 }
 
-                // Left Button Container layout
+                                // Left Button Container layout
                 leftButtonContainer = new LinearLayout(cordova.getActivity());
                 FrameLayout.LayoutParams leftButtonContainerParams = new FrameLayout.LayoutParams(
                         LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -671,6 +674,22 @@ public class ThemeableBrowser extends CordovaPlugin {
                         return false;
                     }
                 });
+
+                RelativeLayout.LayoutParams toggleLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+                toggleLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                toggleLayoutParams.setMargins(0,0,50,0);
+                
+                toggleButton = new Button(cordova.getActivity());
+                toggleButton.setLayoutParams(toggleLayoutParams);
+                setButtonImages(toggleButton, features.toggle, DISABLED_ALPHA);
+                toggleButton.setVisibility(View.GONE);
+                toggleButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View v) {
+                            toggleHeader(toolbar,toggleButton);
+                        }
+                    }
+                );
 
                 // Back button
                 final Button back = createButton(
@@ -829,7 +848,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                         title.setTextSize(features.title.size);
                     }
                 }
-                final ProgressBar progressbar = new ProgressBar(cordova.getActivity(), null, android.R.attr.progressBarStyleHorizontal);
+                                final ProgressBar progressbar = new ProgressBar(cordova.getActivity(), null, android.R.attr.progressBarStyleHorizontal);
                 FrameLayout.LayoutParams progressbarLayout = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, 6);
                 //progressbarLayout.
                 progressbar.setLayoutParams(progressbarLayout);
@@ -914,7 +933,7 @@ public class ThemeableBrowser extends CordovaPlugin {
 
                         if (back != null) {
                             back.setEnabled(canGoBack || features.backButtonCanClose);
-                            
+                                                        
                             if(features.backButton != null && !features.backButton.showFirstTime) {
                                 if(canGoBack) {
                                     back.setVisibility(VISIBLE);    
@@ -1013,8 +1032,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                                 @Override
                                 public void onClick(View view) {
                                     if (inAppWebView != null) {
-                                        emitButtonEvent(buttonProps,
-                                                inAppWebView.getUrl(), index);
+                                        toggleHeader(toolbar,toggleButton);
                                     }
                                 }
                             }
@@ -1050,7 +1068,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                 }
 
                 if (back != null && features.backButton != null
-                        && !ALIGN_RIGHT.equals(features.backButton.align)) {                    
+                        && !ALIGN_RIGHT.equals(features.backButton.align)) {
                     leftButtonContainer.addView(back, 0);
                     leftContainerWidth
                             += back.getLayoutParams().width;
@@ -1063,7 +1081,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                             += forward.getLayoutParams().width;
                 }
 
-                 if (reloadBtn != null && features.reloadButton != null
+                if (reloadBtn != null && features.reloadButton != null
                         && !ALIGN_RIGHT.equals(features.reloadButton.align)) {
                     leftButtonContainer.addView(reloadBtn, 0);
                     leftContainerWidth
@@ -1127,9 +1145,9 @@ public class ThemeableBrowser extends CordovaPlugin {
                 if (features.location) {
                     // Add our toolbar to our main view/layout
                     main.addView(toolbar);
-                     if (features.browserProgress!=null&&features.browserProgress.showProgress){
-                       main.addView(progressbar);
-                   }
+                    if (features.browserProgress!=null&&features.browserProgress.showProgress){
+                        main.addView(progressbar);
+                    }
                 }
 
                 if (!features.fullscreen) {
@@ -1142,7 +1160,12 @@ public class ThemeableBrowser extends CordovaPlugin {
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 lp.height = WindowManager.LayoutParams.MATCH_PARENT;
 
-                dialog.setContentView(main);
+                RelativeLayout RelativeLayout1 = new RelativeLayout(cordova.getActivity());
+                RelativeLayout1.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                RelativeLayout1.addView(toggleButton);
+                RelativeLayout1.addView(main);
+
+                dialog.setContentView(RelativeLayout1);
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);
                 // the goal of openhidden is to load the url and not display it
@@ -1154,6 +1177,16 @@ public class ThemeableBrowser extends CordovaPlugin {
         };
         this.cordova.getActivity().runOnUiThread(runnable);
         return "";
+    }
+
+    private void toggleHeader(FrameLayout header,Button toggle){
+        if(header.getVisibility() == View.VISIBLE){
+            header.setVisibility(View.GONE);
+            toggle.setVisibility(View.VISIBLE);
+        }else{
+            header.setVisibility(View.VISIBLE);
+            toggle.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -1393,15 +1426,23 @@ public class ThemeableBrowser extends CordovaPlugin {
 
         return result;
     }
-
+    
     private Button createButton(BrowserButton buttonProps, String description, View.OnClickListener listener) {
-        Button result = null;
+                Button result = null;
         if (buttonProps != null) {
             result = new Button(cordova.getActivity());
             result.setContentDescription(description);
             result.setLayoutParams(new LinearLayout.LayoutParams(
                     LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            setButtonImages(result, buttonProps, DISABLED_ALPHA);
+
+            if (buttonProps.image != null || buttonProps.wwwImage != null) {
+                setButtonImages(result, buttonProps, DISABLED_ALPHA);
+            }else if(buttonProps.title != null){
+                result.setText(buttonProps.title);
+                result.setBackgroundColor(Color.TRANSPARENT);
+                result.setTextColor(Color.parseColor("#222222"));
+            }
+
             if (listener != null) {
                 result.setOnClickListener(listener);
             }
@@ -1444,7 +1485,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                 boolean canGoForward);
     }
 
-    /**
+/**
      * Receive File Data from File Chooser
      *
      * @param requestCode the requested code from chromeclient
@@ -1748,6 +1789,7 @@ public class ThemeableBrowser extends CordovaPlugin {
         public boolean fullscreen;
         public BrowserProgress browserProgress;
         public String customUserAgent;
+        public BrowserButton toggle;
     }
 
     private static class Event {
@@ -1770,13 +1812,14 @@ public class ThemeableBrowser extends CordovaPlugin {
         public double wwwImageDensity = 1;
         public String align = ALIGN_LEFT;
         public boolean showFirstTime = true;
+        public String title;
     }
 
     private static class BrowserMenu extends BrowserButton {
         public EventLabel[] items;
     }
 
-     private static class BrowserProgress {
+    private static class BrowserProgress {
         public boolean showProgress;
         public String progressBgColor;
         public String progressColor;
