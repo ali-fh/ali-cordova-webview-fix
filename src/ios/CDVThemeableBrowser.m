@@ -1527,13 +1527,7 @@
 - (void)goBack:(id)sender
 {
     [self emitEventForButton:_browserOptions.backButton];
-
-    if (self.webView.canGoBack) {
-        [self.webView goBack];
-        [self updateButtonDelayed:self.webView];
-    } else if (_browserOptions.backButtonCanClose) {
-        [self close];
-    }
+    [self close];
 }
 
 - (void)goForward:(id)sender
