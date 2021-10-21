@@ -1555,9 +1555,17 @@
 
 - (void)goCustomButton:(id)sender
 {
-UIButton* button = sender;
-    NSInteger index = button.tag-TAG_SALT;
-    [self emitEventForButton:_browserOptions.customButtons[index] withIndex:[NSNumber numberWithLong:index]];
+    CGFloat toolbarHeight = [self getFloatFromDict:_browserOptions.toolbar withKey:kThemeableBrowserPropHeight withDefault:TOOLBAR_DEF_HEIGHT];
+    CGFloat statusBarOffset = [self getStatusBarOffset];
+    CGFloat webviewOffset = _browserOptions.fullscreen ? 0.0 : toolbarHeight + statusBarOffset;
+
+    if (NO == self.toolbar.hidden) {
+        self.toolbar.hidden = YES;
+        [self.webView setFrame:CGRectMake(0.0, [self getStatusBarOffset], self.webView.frame.size.width, self.webView.frame.size.height)];
+        [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, 0.0f)];
+    }else {
+        self.toolbar.hidden = NO;
+    }
 }
 
 - (void)goMenu:(id)sender
