@@ -1006,6 +1006,7 @@
     self.forwardButton = [self createButton:_browserOptions.forwardButton action:@selector(goForward:) withDescription:@"forward button"];
     self.reloadButton = [self createButton:_browserOptions.reloadButton action:@selector(doReload:) withDescription:@"reload button"];
     self.menuButton = [self createButton:_browserOptions.menu action:@selector(goMenu:) withDescription:@"menu button"];
+    self.toggle = [self createButton:_browserOptions.toggle action:@selector(doToggle:) withDescription:@"toggle button"];
 
     // Arramge toolbar buttons with respect to user configuration.
     CGFloat leftWidth = 0;
@@ -1083,13 +1084,19 @@
         rightWidth += width;
     }
 
+    if (self.toggle) {
+        self.toggle.frame = CGRectMake(self.view.bounds.size.width - 120, [self getStatusBarOffset], 120.0, 30.0);
+        self.toggle.hidden = YES;
+        [self.view addSubview:self.toggle];
+    }
+
     NSArray* customButtons = _browserOptions.customButtons;
     if (customButtons) {
         NSInteger cnt = [customButtons count]-1;
 
         // Reverse loop because we are laying out from outer to inner.
         for (NSDictionary* customButton in [customButtons reverseObjectEnumerator]) {
-            UIButton* button = [self createButton:customButton action:@selector(goCustomButton:) withDescription:[NSString stringWithFormat:@"custom button at %ld", (long)cnt]];
+            UIButton* button = [self createButton:customButton action:@selector(doToggle:) withDescription:[NSString stringWithFormat:@"custom button at %ld", (long)cnt]];
             if (button) {
                 button.tag = cnt+TAG_SALT;
 
@@ -1553,7 +1560,7 @@
     [self updateButtonDelayed:self.webView];
 }
 
-- (void)goCustomButton:(id)sender
+- (void)doToggle:(id)sender
 {
     CGFloat toolbarHeight = [self getFloatFromDict:_browserOptions.toolbar withKey:kThemeableBrowserPropHeight withDefault:TOOLBAR_DEF_HEIGHT];
     CGFloat statusBarOffset = [self getStatusBarOffset];
@@ -1561,10 +1568,14 @@
 
     if (NO == self.toolbar.hidden) {
         self.toolbar.hidden = YES;
-        [self.webView setFrame:CGRectMake(0.0, [self getStatusBarOffset], self.webView.frame.size.width, self.webView.frame.size.height)];
+        self.toggle.hidden = NO;
+        [self.webView setFrame:CGRectMake(self.webView.frame.origin.x, [self getStatusBarOffset], self.webView.frame.size.width, self.webView.frame.size.height)];
         [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, 0.0f)];
     }else {
         self.toolbar.hidden = NO;
+        self.toggle.hidden = YES;
+        [self.webView setFrame:CGRectMake(self.webView.frame.origin.x, webviewOffset, self.webView.frame.size.width, self.webView.frame.size.height)];
+        [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, toolbarHeight)];
     }
 }
 
@@ -1984,6 +1995,7 @@ static void extracted(CDVThemeableBrowserViewController *object, WKWebView *theW
         self.disableAnimation = NO;
         self.fullscreen = NO;
         self.allowsBackForwardNavigationGestures = NO;
+        self.toggle = nil;
     }
 
     return self;

@@ -61,6 +61,7 @@
 @property (nonatomic) NSDictionary* forwardButton;
 @property (nonatomic) NSDictionary* closeButton;
 @property (nonatomic) NSDictionary* menu;
+@property (nonatomic) NSDictionary* toggle;
 @property (nonatomic) NSArray* customButtons;
 @property (nonatomic) BOOL backButtonCanClose;
 @property (nonatomic) BOOL disableAnimation;
@@ -121,6 +122,7 @@
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinner;
 @property (nonatomic, strong) IBOutlet UIView* toolbar;
 @property (nonatomic, strong) IBOutlet UIProgressView* progressView;
+@property (nonatomic, strong) IBOutlet UIButton* toggle;
 
 @property (nonatomic, strong) NSArray* leftButtons;
 @property (nonatomic, strong) NSArray* rightButtons;
