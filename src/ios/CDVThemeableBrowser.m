@@ -1569,12 +1569,12 @@
     if (NO == self.toolbar.hidden) {
         self.toolbar.hidden = YES;
         self.toggle.hidden = NO;
-        [self.webView setFrame:CGRectMake(self.webView.frame.origin.x, [self getStatusBarOffset], self.webView.frame.size.width, self.webView.frame.size.height)];
+        [self setWebViewFrame:self.view.bounds];
         [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, 0.0f)];
     }else {
         self.toolbar.hidden = NO;
         self.toggle.hidden = YES;
-        [self.webView setFrame:CGRectMake(self.webView.frame.origin.x, webviewOffset, self.webView.frame.size.width, self.webView.frame.size.height)];
+        [self.webView setFrame:CGRectMake(self.webView.frame.origin.x, webviewOffset, self.webView.frame.size.width, (self.view.bounds.size.height - webviewOffset))];
         [self.toolbar setFrame:CGRectMake(self.toolbar.frame.origin.x, [self getStatusBarOffset], self.toolbar.frame.size.width, toolbarHeight)];
     }
 }
