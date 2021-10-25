@@ -1,6 +1,6 @@
 {
   "name": "ali-cordova-plugin-themeablebrowser",
-  "version": "0.4.0",
+  "version": "0.1.0",
   "description": "Cordova ThemeableBrowser Plugin",
   "cordova": {
     "id": "ali-cordova-plugin-themeablebrowser",
