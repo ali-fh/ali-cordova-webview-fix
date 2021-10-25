@@ -20,7 +20,7 @@
 
 <plugin
       xmlns="http://apache.org/cordova/ns/plugins/1.0"
-      id="jimmy-cordova-plugin-themeablebrowser"
+      id="ali-cordova-plugin-themeablebrowser"
       version="0.5.0">
 
     <name>ThemeableBrowser</name>
@@ -72,10 +72,10 @@
         <js-module src="www/themeablebrowser.js" name="themeablebrowser">
             <clobbers target="cordova.ThemeableBrowser" />
         </js-module>
-        
+
         <js-module src="src/browser/InAppBrowserProxy.js" name="InAppBrowserProxy">
             <runs />
         </js-module>
     </platform>
-    
+
 </plugin>
